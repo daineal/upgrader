@@ -402,9 +402,9 @@ class Upgrader {
 
   void _showDialog(
       {@required BuildContext context,
-      @required String title,
-      @required String message,
-      bool canDismissDialog}) {
+        @required String title,
+        @required String message,
+        bool canDismissDialog}) {
     if (debugLogging) {
       print('upgrader: showDialog title: $title');
       print('upgrader: showDialog message: $message');
@@ -522,23 +522,24 @@ class Upgrader {
   }
 
   void onUserUpdated(BuildContext context, bool shouldPop) {
+    print("lol");
     if (debugLogging) {
       print('upgrader: button tapped: update now');
     }
 
     // If this callback has been provided, call it.
     var doProcess = true;
-    if (onUpdate != null) {
-      doProcess = onUpdate();
-    }
+    // if (onUpdate != null) {
+    //   doProcess = onUpdate();
+    // }
 
-    if (doProcess) {
-      _sendUserToAppStore();
-    }
+    // if (doProcess) {
+    //   _sendUserToAppStore();
+    // }
 
-    if (shouldPop) {
-      _pop(context);
-    }
+    // if (shouldPop) {
+    //   _pop(context);
+    // }
   }
 
   Future<bool> clearSavedSettings() async {
@@ -597,26 +598,42 @@ class Upgrader {
     return true;
   }
 
-  void _sendUserToAppStore() async {
-    if (_appStoreListingURL == null || _appStoreListingURL.isEmpty) {
-      if (debugLogging) {
-        print('upgrader: empty _appStoreListingURL');
-      }
-      return;
-    }
+  void sendUserToAppStore() async {
+    if (Platform.isAndroid) {
+      var url = "https://play.google.com/store/apps/details?id=" + _packageInfo.packageName;
 
-    if (debugLogging) {
-      print('upgrader: launching: $_appStoreListingURL');
-    }
-
-    if (await canLaunch(_appStoreListingURL)) {
-      try {
-        await launch(_appStoreListingURL);
-      } catch (e) {
-        if (debugLogging) {
+      if (await canLaunch(url)) {
+        try {
+          await launch(url);
+        } catch (e) {
+          // if (debugLogging) {
           print('upgrader: launch to app store failed: $e');
+          // }
         }
+      } else {}
+    } else {
+
+      if (_appStoreListingURL == null || _appStoreListingURL.isEmpty) {
+        // if (debugLogging) {
+        print('upgrader: empty _appStoreListingURL');
+        // }
+        return;
       }
-    } else {}
+
+      // if (debugLogging) {
+      print('upgrader: launching: $_appStoreListingURL');
+      // }
+
+      if (await canLaunch(_appStoreListingURL)) {
+        try {
+          await launch(_appStoreListingURL);
+        } catch (e) {
+          // if (debugLogging) {
+          print('upgrader: launch to app store failed: $e');
+          // }
+        }
+      } else {}
+    }
   }
+
 }
